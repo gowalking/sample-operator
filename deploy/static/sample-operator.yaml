@@ -1,0 +1,69 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: dreamxes.daas.dreamxos.com
+spec:
+  group: daas.dreamxos.com
+  version: v1
+  scope: Namespaced
+  names:
+    plural: dreamxes
+    singular: dreamx
+    kind: Dreamx
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sample-operator
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sample-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: sample-operator
+  namespace: kube-system
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sample-operator
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-operator
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: sample-operator
+    spec:
+      containers:
+      - name: sample-operator
+        image: 192.168.1.52/tenx_containers/sample-operator:v3.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        command:
+          - /daas/controller
+          - -logtostderr=true
+      restartPolicy: Always
+      serviceAccount: sample-operator
+      serviceAccountName: sample-operator

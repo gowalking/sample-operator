@@ -1,0 +1,20 @@
+apiVersion: daas.dreamxos.com/v1
+kind: Dreamx
+metadata:
+  name: dreamx
+  namespace: admin
+spec:
+  gvl:
+  - groupversion: gaozh21
+    consumers:
+    - host: localhost
+      params: test=1&asd=bb
+    - host: localhost
+      params: test=1&asd=bb
+    providers:
+    - hostport: localhost
+      params: test=1&asd=bb
+      pod: 172.31.153.137
+    - hostport: localhost
+      params: test=1&asd=bb
+      pod: 172.31.98.70
